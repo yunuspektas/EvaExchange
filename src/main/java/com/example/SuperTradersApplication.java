@@ -1,27 +1,30 @@
 package com.example;
 
-import com.example.dto.UserRequest;
+import com.example.dto.request.StockRequest;
+import com.example.dto.request.UserRequest;
 import com.example.entity.enums.RoleType;
-import com.example.service.AuthenticationService;
-import com.example.service.UserRoleService;
-import com.example.service.UserService;
+import com.example.service.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.time.LocalDate;
 
 @SpringBootApplication
 public class SuperTradersApplication implements CommandLineRunner {
 	private final UserRoleService userRoleService;
 	private final UserService userService;
 	private final AuthenticationService authenticationService;
+	private final StockService stockService;
+	private final TradeService tradeService;
 
 	public SuperTradersApplication(UserRoleService userRoleService,
-                                   UserService userService, AuthenticationService authenticationService) {
+                                   UserService userService,
+                                   AuthenticationService authenticationService,
+                                   StockService stockService, TradeService tradeService) {
 		this.userRoleService = userRoleService;
 		this.userService = userService;
         this.authenticationService = authenticationService;
+        this.stockService = stockService;
+        this.tradeService = tradeService;
     }
 
 	public static void main(String[] args) {
@@ -42,34 +45,80 @@ public class SuperTradersApplication implements CommandLineRunner {
 			adminRequest.setUsername("Admin");
 			adminRequest.setPassword("12345678");
 			authenticationService.saveUser(adminRequest,"Admin");
+
+		}
+		//!!! 3 adet stock nesnesi olusturuyorum
+		if(stockService.countStock()==0) {
+			StockRequest apple = new StockRequest();
+			apple.setCurrentPrice(70.00);
+			apple.setRate(70.00);
+			apple.setSymbol("AAP");
+			stockService.saveStock(apple);
+
+			StockRequest aaa = new StockRequest();
+			aaa.setCurrentPrice(80.00);
+			aaa.setRate(80.00);
+			aaa.setSymbol("AAA");
+			stockService.saveStock(aaa);
+
+			StockRequest bbb = new StockRequest();
+			bbb.setCurrentPrice(90.00);
+			bbb.setRate(90.00);
+			bbb.setSymbol("BBB");
+			stockService.saveStock(bbb);
+
 		}
 		//!!! add 5 User With Customer Role
-		//TODO : her müşterinin ticaret operasyonları için bir ALIŞ/SATIŞ işlem günlüğü olusturulacak
 		if(userService.countUserWithRole(RoleType.CUSTOMER)==0){
-			UserRequest customerRequest  = new UserRequest();
-			customerRequest.setUsername("Customer1");
-			customerRequest.setPassword("12345678");
-			authenticationService.saveUser(customerRequest,"Customer");
+			UserRequest customer1  = new UserRequest();
+			customer1.setUsername("Customer1");
+			customer1.setPassword("12345678");
+			authenticationService.saveUser(customer1,"Customer");
+			tradeService.buyStock("Customer1","AAA", 10 );
 
-			UserRequest customerRequest2  = new UserRequest();
-			customerRequest2.setUsername("Customer2");
-			customerRequest2.setPassword("12345678");
-			authenticationService.saveUser(customerRequest2,"Customer");
 
-			UserRequest customerRequest3  = new UserRequest();
-			customerRequest3.setUsername("Customer3");
-			customerRequest3.setPassword("12345678");
-			authenticationService.saveUser(customerRequest3,"Customer");
+			UserRequest customer2  = new UserRequest();
+			customer2.setUsername("Customer2");
+			customer2.setPassword("12345678");
+			authenticationService.saveUser(customer2,"Customer");
+			tradeService.buyStock("Customer2","AAA", 10 );
 
-			UserRequest customerRequest4  = new UserRequest();
-			customerRequest4.setUsername("Customer4");
-			customerRequest4.setPassword("12345678");
-			authenticationService.saveUser(customerRequest4,"Customer");
+			UserRequest customer3  = new UserRequest();
+			customer3.setUsername("Customer3");
+			customer3.setPassword("12345678");
+			authenticationService.saveUser(customer3,"Customer");
+			tradeService.buyStock("Customer3","AAA", 10 );
 
-			UserRequest customerRequest5  = new UserRequest();
-			customerRequest5.setUsername("Customer5");
-			customerRequest5.setPassword("12345678");
-			authenticationService.saveUser(customerRequest5,"Customer");
+			UserRequest customer4  = new UserRequest();
+			customer4.setUsername("Customer4");
+			customer4.setPassword("12345678");
+			authenticationService.saveUser(customer4,"Customer");
+			tradeService.buyStock("Customer4","AAA", 10 );
+
+			UserRequest customer5  = new UserRequest();
+			customer5.setUsername("Customer5");
+			customer5.setPassword("12345678");
+			authenticationService.saveUser(customer5,"Customer");
+			tradeService.buyStock("Customer5","AAA", 10 );
+		}
+		if(stockService.countStock()==0) {
+			StockRequest apple = new StockRequest();
+			apple.setCurrentPrice(120.00);
+			apple.setRate(120.00);
+			apple.setSymbol("AAP");
+			stockService.saveStock(apple);
+
+			StockRequest aaa = new StockRequest();
+			aaa.setCurrentPrice(100.00);
+			aaa.setRate(100.00);
+			aaa.setSymbol("AAA");
+			stockService.saveStock(aaa);
+
+			StockRequest bbb = new StockRequest();
+			bbb.setCurrentPrice(90.00);
+			bbb.setRate(90.00);
+			bbb.setSymbol("BBB");
+			stockService.saveStock(bbb);
 
 		}
 	}

@@ -19,6 +19,6 @@ public class Portfolio {
     private Long id;
 
     // Kullanıcıya ait portföyde bulunan hisse senetlerini temsil eden bir liste.
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PortfolioStock> portfolioStocks;
 }

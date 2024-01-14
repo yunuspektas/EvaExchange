@@ -1,15 +1,20 @@
 package com.example.service;
 
-import com.example.entity.Portfolio;
-import com.example.entity.PortfolioStock;
-import com.example.entity.Stock;
-import com.example.entity.Trade;
+import com.example.dto.response.TradeResponse;
+import com.example.entity.*;
 import com.example.entity.enums.TradeType;
 import com.example.exception.ResourceNotFoundException;
+import com.example.payload.mappers.TradeMapper;
+import com.example.payload.messages.ErrorMessages;
+import com.example.repository.PortoFolioStockRepository;
 import com.example.repository.TradeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -21,32 +26,75 @@ public class TradeService {
     private final StockService stockService;
     private final PortFolioService portFolioService;
     private final TradeRepository tradeRepository;
+    private final TradeMapper tradeMapper;
+    private final PortoFolioStockRepository portoFolioStockRepository;
 
-    public Trade executeBuy(Long portfolioId, String stockSymbol, Integer quantity) {
+    public Trade executeBuy(HttpServletRequest request, String stockSymbol, Integer quantity) {
 
         Stock stock = stockService.checkStockWithSymbol(stockSymbol);
-        Portfolio portfolio = portFolioService.checkPortfolioById(portfolioId);
+        // requesti gonderen kullaniciya ulasiyorum
+        String username = (String) request.getAttribute("username");
+        User customer = userService.findByUsername(username);
+        // kullaniciya ait bir portfolio var mi kontrolu
+        Portfolio portfolio = customer.getPortfolio();
+        if(portfolio == null){
+            throw new ResourceNotFoundException(ErrorMessages.NOT_FOUND_PORTFOLIO_MESSAGE);
+        }
+        List<PortfolioStock> portfolioStocks = portfolio.getPortfolioStocks();
+       for(PortfolioStock ps : portfolioStocks){
+           if(ps.getStock().equals(stock)){
+               ps.setQuantity(ps.getQuantity()+ quantity);
+               portoFolioStockRepository.save(ps);
+           } else {
+               PortfolioStock ps1 = new PortfolioStock();
+               ps1.setQuantity(quantity);
+               ps1.setPortfolio(portfolio);
+               ps1.setStock(stock);
+               portoFolioStockRepository.save(ps1);
+           }
+       }
+
+        //portfolio.getPortfolioStocks().add(portfolioStock);
 
         Trade trade = new Trade();
         trade.setPortfolio(portfolio);
         trade.setStock(stock);
         trade.setPrice(stock.getCurrentPrice());
         trade.setQuantity(quantity);
+        trade.setUser(customer);
         trade.setTradeType(TradeType.BUY);
 
         return tradeRepository.save(trade);
     }
 
-    public Trade executeSell(Long portfolioId, String stockSymbol, Integer quantity) {
+    public Trade executeSell(HttpServletRequest request, String stockSymbol, Integer quantity) {
 
         Stock stock = stockService.findBySymbol(stockSymbol);
-        Portfolio portfolio = portFolioService.checkPortfolioById(portfolioId);
-
-        // kullanicinin portfoyunde yeterli stock var mi kontrolu
-        int availableQuantity = getAvailableQuantityInPortfolio(portfolio, stock, TradeType.SELL, quantity);
+        // requesti gonderen kullaniciya ulasiyorum
+        String username = (String) request.getAttribute("username");
+        User customer = userService.findByUsername(username);
+        // kullaniciya ait bir portfolio var mi kontrolu
+        Portfolio portfolio = customer.getPortfolio();
+        if(portfolio == null){
+            throw new ResourceNotFoundException(ErrorMessages.NOT_FOUND_PORTFOLIO_MESSAGE);
+        }
+        int availableQuantity;
+        // kullanicinin portfoyunde yeterli stock var mi kontrolu :
+        if(customer.getPortfolio().getPortfolioStocks().stream().anyMatch(ps->ps.getStock().equals(stock))){
+            availableQuantity = getAvailableQuantityInPortfolio(portfolio, stock, TradeType.SELL, quantity);
+        } else {
+            throw new ResourceNotFoundException(String.format(ErrorMessages.NOT_FOUND_STOCK_WITH_SYMBOL, stockSymbol));
+        }
 
         if (availableQuantity < quantity) {
-            throw new ResourceNotFoundException("Yetersiz hisse senedi miktarı.");
+            throw new ResourceNotFoundException(ErrorMessages.INSUFFICIENT_STOCK_QUANTITY_MESSAGE);
+        }
+        List<PortfolioStock> portfolioStocks = portfolio.getPortfolioStocks();
+        for(PortfolioStock ps : portfolioStocks){
+            if(ps.getStock().equals(stock)){
+                //ps.setQuantity(ps.getQuantity()- quantity);
+                portoFolioStockRepository.save(ps);
+            }
         }
 
         Trade trade = new Trade();
@@ -54,8 +102,39 @@ public class TradeService {
         trade.setStock(stock);
         trade.setPrice(stock.getCurrentPrice());
         trade.setQuantity(quantity);
+        trade.setUser(customer);
         trade.setTradeType(TradeType.SELL);
+
+        // Kullanıcının portföyündeki satılan hisse senedi miktarını güncelle
+        updatePortfolioStock(portfolio, stock, quantity);
+
         return tradeRepository.save(trade);
+    }
+
+    public void buyStock(String username, String stockSymbol, Integer quantity ){
+        Stock stock = stockService.findBySymbol(stockSymbol);
+        User customer = userService.findByUsername(username);
+        // kullaniciya ait bir portfolio var mi kontrolu
+        Portfolio portfolio = customer.getPortfolio();
+        if(portfolio == null){
+            throw new ResourceNotFoundException(ErrorMessages.NOT_FOUND_PORTFOLIO_MESSAGE);
+        }
+        PortfolioStock portfolioStock = new PortfolioStock();
+        portfolioStock.setStock(stock);
+        portfolioStock.setPortfolio(portfolio);
+        portfolioStock.setQuantity(quantity);
+        portoFolioStockRepository.save(portfolioStock);
+        portfolio.getPortfolioStocks().add(portfolioStock);
+
+        Trade trade = new Trade();
+        trade.setPortfolio(portfolio);
+        trade.setStock(stock);
+        trade.setPrice(stock.getCurrentPrice());
+        trade.setQuantity(quantity);
+        trade.setUser(customer);
+        trade.setTradeType(TradeType.BUY);
+
+        tradeRepository.save(trade);
     }
 
     private int getAvailableQuantityInPortfolio(Portfolio portfolio, Stock stock,
@@ -94,5 +173,22 @@ public class TradeService {
 
         return 0;
     }
+    private void updatePortfolioStock(Portfolio portfolio, Stock stock, int soldQuantity) {
+        List<PortfolioStock> portfolioStocks = portfolio.getPortfolioStocks();
+        for (PortfolioStock portfolioStock : portfolioStocks) {
+            if (portfolioStock.getStock().equals(stock)) {
+                // Portföyde bu hisse senedi bulunuyorsa, satılan miktarı düşürün
+                Integer currentQuantity = portfolioStock.getQuantity();
+                Integer newQuantity = currentQuantity-soldQuantity;
+                portfolioStock.setQuantity(newQuantity);
+            }
+        }
+    }
 
+    public Page<TradeResponse> getAllStock(HttpServletRequest request, int page, int size) {
+        String username = (String) request.getAttribute("username");
+        User customer = userService.findByUsername(username);
+        Pageable pageable = PageRequest.of(page, size);
+        return tradeRepository.findAllByUser(customer, pageable).map(tradeMapper::mapTradeToTradeResponse);
+    }
 }

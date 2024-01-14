@@ -1,5 +1,4 @@
-package com.example.dto;
-
+package com.example.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class RegisterRequest {
 
     @NotNull(message = "Username must not be empty")
     private String username;

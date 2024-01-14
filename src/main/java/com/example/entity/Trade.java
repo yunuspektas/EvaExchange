@@ -1,6 +1,7 @@
 package com.example.entity;
 
 import com.example.entity.enums.TradeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,6 +24,11 @@ public class Trade {
 
     @ManyToOne
     private Stock stock;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
     private Double price;
     private Integer quantity;

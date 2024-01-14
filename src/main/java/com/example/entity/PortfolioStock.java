@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,11 +26,12 @@ public class PortfolioStock {
     private Stock stock;
 
     // Portföyde bulunan hisse senedinin miktarı
-    private BigDecimal quantity;
+    private Integer quantity;
 
     // Portföy referansı
     @ManyToOne
     @JoinColumn(name = "portfolio_id")
+    @JsonIgnore
     private Portfolio portfolio;
 
 }

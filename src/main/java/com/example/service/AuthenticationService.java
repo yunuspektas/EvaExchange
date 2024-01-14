@@ -1,18 +1,16 @@
 package com.example.service;
 
-import com.example.dto.LoginRequest;
-import com.example.dto.RegisterRequest;
-import com.example.dto.UserRequest;
+import com.example.dto.request.LoginRequest;
+import com.example.dto.request.UserRequest;
+import com.example.entity.Portfolio;
 import com.example.entity.User;
 import com.example.entity.enums.RoleType;
 import com.example.exception.ConflictException;
-import com.example.exception.ResourceNotFoundException;
 import com.example.payload.mappers.UserMapper;
 import com.example.payload.messages.ErrorMessages;
 import com.example.payload.messages.SuccessMessages;
 import com.example.repository.UserRepository;
 import com.example.security.jwt.JwtUtils;
-import com.example.security.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,10 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +43,7 @@ public class AuthenticationService {
         // !!! valide edilen kullanici Context e atiliyor
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // !!! JWT token olusturuluyor
-        String token = "Bearer " + jwtUtils.generateJtwToken(authentication);
+        String token = jwtUtils.generateJtwToken(authentication);
 
         return ResponseEntity.ok(token);
     }
@@ -65,12 +59,15 @@ public class AuthenticationService {
             // !!! admin rolu veriliyor
             user.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
         } else {
-            throw new ResourceNotFoundException(String.format(
-                    ErrorMessages.NOT_FOUND_USER_USERROLE_MESSAGE, userRole));
+            user.setUserRole(userRoleService.getUserRole(RoleType.CUSTOMER));
         }
 
         //!!! password encode ediliyor
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // kullaniciya ait portofolio olusturuluyor
+        Portfolio portfolio = new Portfolio();
+        user.setPortfolio(portfolio);
 
         userRepository.save(user);
 

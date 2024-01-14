@@ -1,16 +1,17 @@
 package com.example.controller;
 
-import com.example.dto.TradeRequest;
+import com.example.dto.request.TradeRequest;
+import com.example.dto.response.TradeResponse;
 import com.example.entity.Trade;
 import com.example.service.TradeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/trades")
@@ -20,12 +21,12 @@ public class TradeController {
 
     private final TradeService tradeService;
 
-    @PostMapping("/buy")
+    @PostMapping("/buy") // http://localhost:8080/api/trades/buy + JSON
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<Trade> buyStock(@RequestBody TradeRequest tradeRequest) {
+    public ResponseEntity<Trade> buyStock(@RequestBody TradeRequest tradeRequest, HttpServletRequest httpServletRequest) {
         try {
             Trade trade = tradeService.executeBuy(
-                    tradeRequest.getPortfolioId(),
+                    httpServletRequest,
                     tradeRequest.getStockSymbol(),
                     tradeRequest.getQuantity()
             );
@@ -35,12 +36,12 @@ public class TradeController {
         }
     }
 
-    @PostMapping("/sell")
+    @PostMapping("/sell") // http://localhost:8080/api/trades/sell + JSON
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<Trade> sellStock(@RequestBody TradeRequest tradeRequest) {
+    public ResponseEntity<Trade> sellStock(@RequestBody TradeRequest tradeRequest,HttpServletRequest httpServletRequest) {
         try {
             Trade trade = tradeService.executeSell(
-                    tradeRequest.getPortfolioId(),
+                   httpServletRequest,
                     tradeRequest.getStockSymbol(),
                     tradeRequest.getQuantity()
             );
@@ -48,6 +49,14 @@ public class TradeController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/getAll")// http://localhost:8080//api/trades/getAll?page=1&size=10
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    public Page<TradeResponse> getAllStock(HttpServletRequest httpServletRequest,
+                                         @RequestParam(value = "page") int page,
+                                         @RequestParam(value = "size") int size) {
+       return tradeService.getAllStock(httpServletRequest,page,size);
     }
 }
 

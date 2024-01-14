@@ -4,6 +4,8 @@ package com.example.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 @Getter
@@ -24,7 +26,8 @@ public class Stock {
     @Column(unique = true) // this field must be unique
     private String symbol;
 
-    @Pattern(regexp = "^\\d+\\.\\d{2}$", message = "Oran, tam olarak 2 ondalık basamak olmalıdır.")
+    @DecimalMin(value = "0.00", message = "Hisse oranı en az 2 ondalık basamak içermelidir.")
+    @DecimalMax(value = "99.99", message = "Hisse oranı en fazla 2 ondalık basamak içermelidir.")
     private Double rate;
 
     private Double currentPrice;

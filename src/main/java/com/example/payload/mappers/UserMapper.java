@@ -1,7 +1,7 @@
 package com.example.payload.mappers;
 
 
-import com.example.dto.UserRequest;
+import com.example.dto.request.UserRequest;
 import com.example.entity.User;
 import org.springframework.stereotype.Component;
 
