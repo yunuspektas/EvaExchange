@@ -4,12 +4,12 @@
 	Sistemde 2 farkli rol tanimlandi, Admin ve Customer :
 
 					      
-		    * Cutomer in yapabilecekleri	=	Sisteme login olma
+		    * Cutomer'in yapabilecekleri	=	Sisteme login olma
 					       			Stock Alis islemi
 					       			Stock Satis islemi
 					       			Kendine ait Butun Trade Bilgilerini getirme
 	    
-	        * Admin in yapabilecekleri 	=	Sisteme login olma
+	        * Admin'in yapabilecekleri 	=	Sisteme login olma
 					       			Sisteme yeni Customer ekleme
 					       			Sisteme yeni Stock Ekleme
 		
