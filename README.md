@@ -4,14 +4,14 @@
 	Sistemde 2 farkli rol tanimlandi, Admin ve Customer :
 
 					      
-		* Cutomer in yapabilecekleri	=	Sisteme login olma
-					       		Stock Alis islemi
-					       		Stock Satis islemi
-					       		Kendine ait Butun Trade Bilgilerini getirme
+		    * Cutomer in yapabilecekleri	=	Sisteme login olma
+					       			Stock Alis islemi
+					       			Stock Satis islemi
+					       			Kendine ait Butun Trade Bilgilerini getirme
 	    
-	        * Admin in yapabilecekleri=	Sisteme login olma
-					       		Sisteme yeni Customer ekleme
-					       		Sisteme yeni Stock Ekleme
+	        * Admin in yapabilecekleri 	=	Sisteme login olma
+					       			Sisteme yeni Customer ekleme
+					       			Sisteme yeni Stock Ekleme
 		
 
 * Response larin tamaminda DTO nesneleri kullanild ve DTO - POJO donusumleri icin manuel mapper siniflari yazildi
