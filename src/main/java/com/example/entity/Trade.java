@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @Builder
 
 @Entity
+@Table(name = "t_trade")
 public class Trade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -33,93 +33,62 @@ public class SuperTradersApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// !!! Role tablomu dolduracagim
-		if(userRoleService.getAllUserRole().isEmpty()){
+		createRoles();
+		createAdmin();
+		createStocks();
+		createCustomers();
+	}
+
+	// Rollerin olusturulmasi: Eğer rol tablosu boşsa, Admin ve Customer rollerini ekler.
+	private void createRoles() {
+		if (userRoleService.getAllUserRole().isEmpty()) {
 			userRoleService.save(RoleType.ADMIN);
 			userRoleService.save(RoleType.CUSTOMER);
-
-		}
-		//!!! add user with Admin Role
-		if(userService.countUserWithRole(RoleType.ADMIN)==0){
-			UserRequest adminRequest  = new UserRequest();
-			adminRequest.setUsername("Admin");
-			adminRequest.setPassword("12345678");
-			authenticationService.saveUser(adminRequest,"Admin");
-
-		}
-		//!!! 3 adet stock nesnesi olusturuyorum
-		if(stockService.countStock()==0) {
-			StockRequest apple = new StockRequest();
-			apple.setCurrentPrice(70.00);
-			apple.setRate(70.00);
-			apple.setSymbol("AAP");
-			stockService.saveStock(apple);
-
-			StockRequest aaa = new StockRequest();
-			aaa.setCurrentPrice(80.00);
-			aaa.setRate(80.00);
-			aaa.setSymbol("AAA");
-			stockService.saveStock(aaa);
-
-			StockRequest bbb = new StockRequest();
-			bbb.setCurrentPrice(90.00);
-			bbb.setRate(90.00);
-			bbb.setSymbol("BBB");
-			stockService.saveStock(bbb);
-
-		}
-		//!!! add 5 User With Customer Role
-		if(userService.countUserWithRole(RoleType.CUSTOMER)==0){
-			UserRequest customer1  = new UserRequest();
-			customer1.setUsername("Customer1");
-			customer1.setPassword("12345678");
-			authenticationService.saveUser(customer1,"Customer");
-			tradeService.buyStock("Customer1","AAA", 10 );
-
-
-			UserRequest customer2  = new UserRequest();
-			customer2.setUsername("Customer2");
-			customer2.setPassword("12345678");
-			authenticationService.saveUser(customer2,"Customer");
-			tradeService.buyStock("Customer2","AAA", 10 );
-
-			UserRequest customer3  = new UserRequest();
-			customer3.setUsername("Customer3");
-			customer3.setPassword("12345678");
-			authenticationService.saveUser(customer3,"Customer");
-			tradeService.buyStock("Customer3","AAA", 10 );
-
-			UserRequest customer4  = new UserRequest();
-			customer4.setUsername("Customer4");
-			customer4.setPassword("12345678");
-			authenticationService.saveUser(customer4,"Customer");
-			tradeService.buyStock("Customer4","AAA", 10 );
-
-			UserRequest customer5  = new UserRequest();
-			customer5.setUsername("Customer5");
-			customer5.setPassword("12345678");
-			authenticationService.saveUser(customer5,"Customer");
-			tradeService.buyStock("Customer5","AAA", 10 );
-		}
-		if(stockService.countStock()==0) {
-			StockRequest apple = new StockRequest();
-			apple.setCurrentPrice(120.00);
-			apple.setRate(120.00);
-			apple.setSymbol("AAP");
-			stockService.saveStock(apple);
-
-			StockRequest aaa = new StockRequest();
-			aaa.setCurrentPrice(100.00);
-			aaa.setRate(100.00);
-			aaa.setSymbol("AAA");
-			stockService.saveStock(aaa);
-
-			StockRequest bbb = new StockRequest();
-			bbb.setCurrentPrice(90.00);
-			bbb.setRate(90.00);
-			bbb.setSymbol("BBB");
-			stockService.saveStock(bbb);
-
 		}
 	}
+
+	// Admin  olusturulmasi: Eğer Admin rolüne sahip kullanıcı yoksa, bir tane ekler.
+	private void createAdmin() {
+		if (userService.countUserWithRole(RoleType.ADMIN) == 0) {
+			createUserWithRole("Admin", "12345678", RoleType.ADMIN);
+		}
+	}
+
+	// Stokların olusturulmasi: Eğer stok tablosu boşsa, örnek stoklar ekler.
+	private void createStocks() {
+		if (stockService.countStock() == 0) {
+			createStock("AAP", 70.00);
+			createStock("AAA", 80.00);
+			createStock("BBB", 90.00);
+		}
+	}
+
+	// Müşterilerin olusturulmasi: Eğer Customer rolüne sahip kullanıcı yoksa, örnek kullanıcılar ekler ve stok alımları yapar.
+	private void createCustomers() {
+		if (userService.countUserWithRole(RoleType.CUSTOMER) == 0) {
+			for (int i = 1; i <= 5; i++) {
+				createUserWithRole("Customer" + i, "12345678", RoleType.CUSTOMER);
+				tradeService.buyStock("Customer" + i, "AAA", 10);
+			}
+		}
+	}
+
+	// Verilen kullanıcı adı, şifre ve rol ile yeni bir kullanıcı oluşturur.
+	private void createUserWithRole(String username, String password, RoleType role) {
+		UserRequest userRequest = new UserRequest();
+		userRequest.setUsername(username);
+		userRequest.setPassword(password);
+		authenticationService.saveUser(userRequest, role.name());
+	}
+
+	// Verilen sembol ve fiyat ile yeni bir stok olusturur
+	private void createStock(String symbol, double price) {
+		StockRequest stockRequest = new StockRequest();
+		stockRequest.setCurrentPrice(price);
+		stockRequest.setRate(String.valueOf(price)); // Fiyat ve oran aynı varsayılıyor, gerektiğinde değiştirilebilir.
+		stockRequest.setSymbol(symbol);
+		stockService.saveStock(stockRequest);
+	}
 }
+
+

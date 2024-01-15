@@ -19,21 +19,14 @@ public class JwtUtils {
 	@Value("${backendapi.app.jwtExpirationMs}")
 	private long jwtExpirationMs;
 
-
 	@Value("${backendapi.app.jwtSecret}")
 	private String jwtSecret;
 
-	// Not: Generate JWT *************************************************
 	public String generateJtwToken(Authentication authentication) {
-		//get infos of logged-in user from context
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
 		return generateTokenFromUsername(userDetails.getUsername());
 	}
-	/**
-	 * @param username as String
-	 * @return JWT signed with algorithm and our jwtSecret key
-	 */
+
 	public String generateTokenFromUsername(String username) {
 		return Jwts.builder()
 				.setSubject(username)
@@ -44,7 +37,6 @@ public class JwtUtils {
 	}
 
 
-	// Not: Validate JWT *************************************************
 	public boolean validateJwtToken(String jwtToken) {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwtToken);
@@ -63,8 +55,6 @@ public class JwtUtils {
 		return false;
 	}
 
-
-	// Not: getUsernameForJWT ********************************************
 	public String getUserNameFromJwtToken(String token) {
 		return Jwts.parser()
 				.setSigningKey(jwtSecret)

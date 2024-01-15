@@ -9,7 +9,7 @@ public class StockMapper {
 
     public Stock mapStockRequestToStock(StockRequest stockRequest){
         return Stock.builder()
-                .rate(stockRequest.getRate())
+                .rate(Double.parseDouble(stockRequest.getRate()))
                 .currentPrice(stockRequest.getCurrentPrice())
                 .symbol(stockRequest.getSymbol())
                 .build();

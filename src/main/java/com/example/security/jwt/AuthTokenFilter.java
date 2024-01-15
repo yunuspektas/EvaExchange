@@ -37,21 +37,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		try {
-			// 1) From every request get the JWT
+
 			String jwt = parseJwt(request);
-			// 2) validate JWT
 			if(jwt !=null && jwtUtils.validateJwtToken(jwt)){
-				// 3) we need username for this we get this data from JWT
 				String userName = jwtUtils.getUserNameFromJwtToken(jwt);
-				// 4) check the DB and find the user then upgrade the user to UserDetails
 				UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-				// servis katmaninda usera ulasmak istersem requestin attribute kismina username ekliyorum
 				request.setAttribute("username",userName);
-				// 5) we have userDetails object then we have to send this information to the SPRING SECURITY CONTEXT
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails,null,userDetails.getAuthorities());
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				// 6) now spring security context know, who is logged in.
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		} catch (UsernameNotFoundException e){

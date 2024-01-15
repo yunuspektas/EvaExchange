@@ -8,16 +8,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class will be responsible for possible authentication errors handling.
- */
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
@@ -25,12 +21,9 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException{
-		// error will be logged in console and/or to a file
+
 		LOGGER.error("Unauthorized error : {}" , authException.getMessage());
-		// response icerigi JSON olacak ve HTTP Status Cod da 401, UnAuthorized olacagini setliyorum
-		//we are setting the content type of the response
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		//we are setting the response status to 401
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
 		final Map<String,Object> body = new HashMap<>();

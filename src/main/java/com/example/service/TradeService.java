@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -92,7 +93,6 @@ public class TradeService {
         List<PortfolioStock> portfolioStocks = portfolio.getPortfolioStocks();
         for(PortfolioStock ps : portfolioStocks){
             if(ps.getStock().equals(stock)){
-                //ps.setQuantity(ps.getQuantity()- quantity);
                 portoFolioStockRepository.save(ps);
             }
         }
@@ -185,10 +185,12 @@ public class TradeService {
         }
     }
 
-    public Page<TradeResponse> getAllStock(HttpServletRequest request, int page, int size) {
+    public List<TradeResponse> getAllTrade(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
         User customer = userService.findByUsername(username);
-        Pageable pageable = PageRequest.of(page, size);
-        return tradeRepository.findAllByUser(customer, pageable).map(tradeMapper::mapTradeToTradeResponse);
+        return tradeRepository.findByUser(customer)
+                .stream()
+                .map(tradeMapper::mapTradeToTradeResponse)
+                .collect(Collectors.toList());
     }
 }

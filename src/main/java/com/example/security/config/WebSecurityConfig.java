@@ -54,8 +54,6 @@ public class WebSecurityConfig {
 
 	}
 
-
-
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
 		return new AuthTokenFilter();
@@ -89,9 +87,6 @@ public class WebSecurityConfig {
 	}
 
 	private static final String[] AUTH_WHITE_LIST = {
-			"/v3/api-docs/**", // eklenecek
-			"swagger-ui.html", // eklenecek
-			"/swagger-ui/**", // eklenecek
 			"/",
 			"index.html",
 			"/images/**",
@@ -99,8 +94,5 @@ public class WebSecurityConfig {
 			"/js/**",
 			"/auth/login"
 	};
-
-
-
 
 }

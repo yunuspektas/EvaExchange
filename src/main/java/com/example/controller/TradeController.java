@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/trades")
@@ -23,7 +25,8 @@ public class TradeController {
 
     @PostMapping("/buy") // http://localhost:8080/api/trades/buy + JSON
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<Trade> buyStock(@RequestBody TradeRequest tradeRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Trade> buyStock(@RequestBody @Valid TradeRequest tradeRequest,
+                                          HttpServletRequest httpServletRequest) {
         try {
             Trade trade = tradeService.executeBuy(
                     httpServletRequest,
@@ -38,7 +41,8 @@ public class TradeController {
 
     @PostMapping("/sell") // http://localhost:8080/api/trades/sell + JSON
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public ResponseEntity<Trade> sellStock(@RequestBody TradeRequest tradeRequest,HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Trade> sellStock(@RequestBody @Valid TradeRequest tradeRequest,
+                                           HttpServletRequest httpServletRequest) {
         try {
             Trade trade = tradeService.executeSell(
                    httpServletRequest,
@@ -51,12 +55,10 @@ public class TradeController {
         }
     }
 
-    @GetMapping("/getAll")// http://localhost:8080//api/trades/getAll?page=1&size=10
+    @GetMapping("/getAll")// http://localhost:8080/api/trades/getAll?page=1&size=10
     @PreAuthorize("hasAnyAuthority('CUSTOMER')")
-    public Page<TradeResponse> getAllStock(HttpServletRequest httpServletRequest,
-                                         @RequestParam(value = "page") int page,
-                                         @RequestParam(value = "size") int size) {
-       return tradeService.getAllStock(httpServletRequest,page,size);
+    public List<TradeResponse> getAllTrade(HttpServletRequest httpServletRequest) {
+       return tradeService.getAllTrade(httpServletRequest);
     }
 }
 
