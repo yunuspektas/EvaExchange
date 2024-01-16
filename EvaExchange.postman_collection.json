@@ -1,0 +1,315 @@
+{
+	"info": {
+		"_postman_id": "befca1eb-a069-4bdb-91a5-8e71463aab84",
+		"name": "EvaExchange",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24147111"
+	},
+	"item": [
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "loginAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonDaata = pm.response.json();",
+									"var a = jsonDaata.token;",
+									"if(a!=null){",
+									"pm.globals.set(\"token\",a);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"Admin\",\n    \"password\" : \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "loginCustomer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"Customer1\",\n    \"password\" : \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "buyStock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lcjEiLCJpYXQiOjE3MDUzNDc0NzMsImV4cCI6MTcwNTQzMzg3M30.LJ5JZmN87nQBxCROut3mlvOSTNNFRUo3TVjB0FYknhscWgphaDGk_nOf--S_WRT5T4B0gBzLjXcZqG_F6EIpaQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"portfolioId\" : 2,\n    \"stockSymbol\" : \"AAA\",\n    \"quantity\" : 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/trades/buy",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"trades",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sellStock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lcjEiLCJpYXQiOjE3MDUzNDc0NzMsImV4cCI6MTcwNTQzMzg3M30.LJ5JZmN87nQBxCROut3mlvOSTNNFRUo3TVjB0FYknhscWgphaDGk_nOf--S_WRT5T4B0gBzLjXcZqG_F6EIpaQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"portfolioId\" : 2,\n    \"stockSymbol\" : \"AAA\",\n    \"quantity\" : 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/trades/sell",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"trades",
+								"sell"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllTrade",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJDdXN0b21lcjEiLCJpYXQiOjE3MDUzNDg5NDIsImV4cCI6MTcwNTQzNTM0Mn0.l2An0TBPYH5uCGAw6iSGAF3BZWqZ9_bhLCOghmuHm7bCMcKh4DaUipImb4ePoNyVBXrBIuJkEqrtSt9D9YPVgQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/trades/getAll?page=1&size=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"trades",
+								"getAll"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "saveUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbiIsImlhdCI6MTcwNTM0NjY4NiwiZXhwIjoxNzA1NDMzMDg2fQ.zFwYvHbr-wdSVnw_nKlV-1lruytz7TYBu_PloUMx_0UoXTuX1m6mKppzwjmsbT9uJLuZL0AtJ_5EHrRyNGBXzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"CustomerYunus\",\n    \"password\" : \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/save/Customer",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"save",
+								"Customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveStock",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbiIsImlhdCI6MTcwNTM0NzM3MSwiZXhwIjoxNzA1NDMzNzcxfQ.FgeYbNEiPGZVdpJ2lhFp_TCeULFYuk-Oe0spirh-WCAQ6FgjmGk44ZU2vIcw7mO-petcVHVuNZp39xhR5JFcwQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\": \"ABK\",\n    \"rate\": 23.45,\n    \"currentPrice\": 78.90\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/stock",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"stock"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
