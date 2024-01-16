@@ -27,7 +27,7 @@
 	5 tane Customer 
 	3 tane Stock olusturuyor, her kullanici icin 1 er tane Alis islemi gerceklestirilmis sekilde sistem hazirdir.
 	
-* Database credentials bilgileri application.properties dosyasinda mevcuttur.
+* Database credentials bilgileri application.properties dosyasinda mevcuttur..
 
 
 
